@@ -13,13 +13,30 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Inject Pip Bug Patch
-        run: |
-          mkdir -p ~/.config/pip
-          echo -e "[global]\nconstraints = constraints.txt" > ~/.config/pip/pip.conf
-          echo "pip==24.0" > constraints.txt
-
-      - name: Build Android App Engine
-        uses: digreatbrian/buildozer-action@main
+      - name: Install Java 17 Engine
+        uses: actions/setup-java@v4
         with:
-          buildozer_version: stable
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Python Package Utilities
+        run: |
+          pip install --upgrade pip==24.0
+          pip install buildozer cython virtualenv
+
+      - name: Configure Android SDK Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+
+      - name: Compile Game to APK
+        run: |
+          buildozer init
+          sed -i 's/orientation = portrait/orientation = landscape/g' buildozer.spec
+          buildozer -v android debug
+
+      - name: Save Mobile App File
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-game-apk
+          path: bin/*.apk
