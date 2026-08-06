@@ -1,0 +1,19 @@
+name: Build Mobile App APK
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Stable Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+
+      - name: Build Android App Engine
+        uses: digreatbrian/buildozer-action@main
+        with:
+          buildozer_version: stable
