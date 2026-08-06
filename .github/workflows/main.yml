@@ -13,6 +13,12 @@ jobs:
         with:
           python-version: '3.8'
 
+      - name: Inject Pip Bug Patch
+        run: |
+          mkdir -p ~/.config/pip
+          echo -e "[global]\nconstraints = constraints.txt" > ~/.config/pip/pip.conf
+          echo "pip==24.0" > constraints.txt
+
       - name: Build Android App Engine
         uses: digreatbrian/buildozer-action@main
         with:
